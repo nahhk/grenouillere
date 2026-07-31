@@ -7,6 +7,6 @@ export default defineConfig({
   trailingSlash: 'never',
   output: 'static',
   adapter: cloudflare({
-    imageService: 'passthrough',
+    imageService: 'compile',
   }),
 });
