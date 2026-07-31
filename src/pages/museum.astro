@@ -59,7 +59,7 @@ const photos = await Promise.all(
         "--f-toolbar-padding": "16px",
       },
       Carousel: {
-        Arrows: true,
+        Arrows: false,
         Toolbar: {
           display: {
             left: ["counter"],
@@ -68,6 +68,11 @@ const photos = await Promise.all(
           },
         },
         transition: "slide",
+        breakpoints: {
+          "(min-width: 768px)": {
+            Arrows: true,
+          },
+        },
       },
     });
   }
