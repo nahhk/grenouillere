@@ -1,0 +1,76 @@
+---
+import { Image } from "astro:assets";
+import Layout from "~/layouts/Layout.astro";
+import "@fancyapps/ui/dist/fancybox/fancybox.css";
+import "~/styles/museum.css";
+
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  "../images/*.{jpg,jpeg,png,webp}",
+);
+---
+
+<Layout title="Museum" description="Photo museum">
+  <section class="justified-gallery" aria-label="Museum">
+    {
+      Object.entries(images).map(async ([_path, image], index) => {
+        const { default: imageData } = await image();
+        return (
+          <a
+            href={imageData.src}
+            style={`--width: ${imageData.width}; --height: ${imageData.height};`}
+            data-fancybox="museum"
+            data-download={`foto-${index + 1}.${imageData.format ?? "webp"}`}
+          >
+            <Image
+              format="webp"
+              src={imageData}
+              alt={`Foto ${index + 1}`}
+              widths={[400, 800, 1200]}
+              sizes="(max-width: 480px) 100vw, (max-width: 900px) 50vw, 33vw"
+              height={400}
+              loading={index < 6 ? "eager" : "lazy"}
+            />
+          </a>
+        );
+      })
+    }
+  </section>
+</Layout>
+
+<script>
+  import { Fancybox } from "@fancyapps/ui/dist/fancybox/";
+
+  function currentTheme(): "light" | "dark" {
+    return document.documentElement.classList.contains("dark") ? "dark" : "light";
+  }
+
+  function bindLightbox() {
+    Fancybox.bind("[data-fancybox]", {
+      theme: currentTheme(),
+      mainStyle: {
+        "--f-button-border-radius": "50%",
+        "--f-button-width": "44px",
+        "--f-button-height": "44px",
+        "--f-toolbar-padding": "16px",
+      },
+      Carousel: {
+        Arrows: true,
+        Toolbar: {
+          display: {
+            left: ["counter"],
+            middle: [],
+            right: ["thumbs", "close"],
+          },
+        },
+        transition: "slide",
+      },
+    });
+  }
+
+  bindLightbox();
+
+  window.addEventListener("theme-change", () => {
+    Fancybox.unbind("[data-fancybox]");
+    bindLightbox();
+  });
+</script>
